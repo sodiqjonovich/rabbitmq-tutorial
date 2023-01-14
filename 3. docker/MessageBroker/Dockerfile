@@ -1,0 +1,5 @@
+FROM rabbitmq:3.9-management
+ENV RABBITMQ_DEFAULT_USER=secretguest
+ENV RABBITMQ_DEFAULT_PASS=1234567890
+RUN rabbitmq-plugins enable rabbitmq_management
+RUN rabbitmq-plugins enable rabbitmq_shovel rabbitmq_shovel_management

@@ -1,0 +1,57 @@
+version: '3.9'
+services:
+  sender:
+    build: 
+      context: .
+      dockerfile: SenderApp.Api/Dockerfile
+    image: sender-app-image
+    container_name: sender-app-container
+    restart: always
+    ports:
+      - 81:80
+      - 444:443
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    networks:
+      - rabbit-bridge
+  receiver:
+    build: 
+      context: .
+      dockerfile: ReceiverApp.Api/Dockerfile
+    image: receiver-app-image
+    container_name: receiver-app-container
+    restart: always
+    ports:
+      - 82:80
+      - 446:443
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production 
+    volumes:
+      - messages-store:/app/wwwroot
+    networks:
+      - rabbit-bridge
+  rabbitmq:
+    build: 
+      context: .
+      dockerfile: messageBroker/Dockerfile
+    hostname: "rabbitmq-host"
+    image: rabbitmq-image
+    container_name: rabbitmq-container  
+    restart: always
+    ports:
+      - 4369:4369
+      - 5671:5671
+      - 5672:5672
+      - 15671:15671
+      - 15673:15672
+      - 25672:25672
+    networks:
+      - rabbit-bridge
+
+volumes:
+  messages-store:
+    driver: local
+
+networks:
+  rabbit-bridge:
+    driver: bridge

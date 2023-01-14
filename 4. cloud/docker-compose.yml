@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  sender:
+    build: 
+      context: .
+      dockerfile: SenderApp.Api/Dockerfile
+    image: sender-app-image
+    container_name: sender-app-container
+    restart: always
+    ports:
+      - 81:80
+      - 444:443
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    networks:
+      - custom-bridge
+  receiver:
+    build: 
+      context: .
+      dockerfile: ReceiverApp.Api/Dockerfile
+    image: receiver-app-image
+    container_name: receiver-app-container
+    restart: always
+    ports:
+      - 82:80
+      - 446:443
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production 
+    volumes:
+      - messages-store:/app/wwwroot
+    networks:
+      - custom-bridge
+
+volumes:
+  messages-store:
+    driver: local
+
+networks:
+  custom-bridge:
+    driver: bridge
